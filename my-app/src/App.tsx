@@ -1,8 +1,11 @@
-import { useState } from 'react'
-import './App.css'
+import './css/layout.css'
+import './css/reset.css'
+import './css/styles.css'
 
 function App() {
-  return ()
+  return (
+    <div className='container'>Some text</div>
+  )
 }
 
 export default App
