@@ -1,53 +1,78 @@
-import { useEffect, useState } from "react";
-import { addEntry, UnsavedEntry } from "../lib/data";
+import { FormEvent, useEffect, useState } from "react";
+import { addEntry, Entry, readEntry, UnsavedEntry, updateEntry } from "../lib/data";
+import { useNavigate, useParams } from "react-router";
 
-export function EntryForm() {
+type Props = {
+  isEditing: boolean;
+  setIsEditing: (value: boolean) => void;
+}
+
+export function EntryForm({isEditing, setIsEditing}: Props) {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<unknown>();
-  const [entry, setEntry] = useState<UnsavedEntry | null>(null);
+  const [entry, setEntry] = useState<UnsavedEntry| Entry | null>(null);
 
-  // function handleSubmit() {
-  //   useEffect(() => {
-  //   const addData = async () => {
-  //     const entry: UnsavedEntry = {
-  //       title: title,
-  //       photoUrl: image,
-  //       notes: notes,
-  //     }
-  //     try {
-  //       addEntry(entry);
-  //     } catch (error) {
-  //       setError(error);
-  //       }
-  //     };
-  //     addData();
-  //   }, []
-  // )}
+  const entryId = useParams();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const getEntry = async () => {
+      try {
+        const entry  = await readEntry(Number(entryId.entryId));
+        if (!entry) return;
+        setTitle(entry.title);
+        setImage(entry.photoUrl);
+        setNotes(entry.notes);
+      } catch (error){
+        setError(error);
+      }
+      }
+      getEntry();
+    },[entryId])
 
   function handleSubmit (event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const newEntry: UnsavedEntry = {
       title: title,
       photoUrl: image,
-      notes: notes
+      notes: notes,
     }
-    setEntry(newEntry);
+    if(isEditing) {
+     const editedEntry: Entry = {
+      ...newEntry,
+      entryId: Number(entryId.entryId)
+     }
+     setEntry(editedEntry);
+     console.log('entry', entry);
+    } else {
+      setEntry(newEntry);
+    }
+    setIsEditing(false);
+    setTitle('');
+    setImage('');
+    setNotes('');
   }
 
   useEffect(() => {
     const addData = async () => {
       if (!entry) return;
       try {
-        await addEntry(entry);
+        if (!isEditing) {
+          await addEntry(entry);
+        } else {
+          await updateEntry(entry as Entry);
+        }
       } catch (error) {
         setError(error);
         }
+      finally {
+        navigate('/');
+      }
     }
     addData();
-  }, [entry])
+  }, [entry, isEditing, navigate])
 
 
   return (
