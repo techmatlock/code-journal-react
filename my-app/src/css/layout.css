@@ -54,6 +54,8 @@
   align-items: flex-end;
 }
 
+
+
 .width-100 {
   width: 100%;
 }
@@ -86,6 +88,9 @@
   background-color: #f0f0f0;
 }
 
+.padding-lr {
+  padding: 0 1rem;
+}
 @media screen and (width >= 768px) {
   .container {
     max-width: 900px;
