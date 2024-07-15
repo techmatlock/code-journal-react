@@ -1,30 +1,34 @@
-import { useEffect, useState } from "react";
-import { addEntry, UnsavedEntry } from "../lib/data";
+import { FormEvent, useEffect, useState } from "react";
+import { addEntry, readEntry, UnsavedEntry } from "../lib/data";
+import { useParams } from "react-router";
 
-export function EntryForm() {
+type Props = {
+  isEditing: boolean;
+}
+
+export function EntryForm({isEditing}: Props) {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<unknown>();
   const [entry, setEntry] = useState<UnsavedEntry | null>(null);
 
-  // function handleSubmit() {
-  //   useEffect(() => {
-  //   const addData = async () => {
-  //     const entry: UnsavedEntry = {
-  //       title: title,
-  //       photoUrl: image,
-  //       notes: notes,
-  //     }
-  //     try {
-  //       addEntry(entry);
-  //     } catch (error) {
-  //       setError(error);
-  //       }
-  //     };
-  //     addData();
-  //   }, []
-  // )}
+
+  const entryId = useParams();
+  console.log('entryid',entryId.entryId)
+  useEffect(() => {
+    const getEntry = async () => {
+      try {
+        const entry  = await readEntry(Number(entryId.entryId));
+        console.log('entry',entry)
+      } catch (error){
+//
+      }
+      }
+      getEntry();
+    },[entryId])
+
+
 
 
   function handleSubmit (event: FormEvent<HTMLFormElement>) {

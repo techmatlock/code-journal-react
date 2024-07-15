@@ -3,6 +3,11 @@ import '../css/layout.css'
 import '../css/reset.css'
 import '../css/styles.css'
 import { FaPencil } from "react-icons/fa6";
+type Props = {
+  isEditing: () => void;
+
+}
+
 const testEntries = [
   {
   entryId: 1,
@@ -23,7 +28,7 @@ const testEntries = [
   notes: 'dkjfhsjkdhfdshfjksdhfdksj'
 },
 ]
-export function EntryList() {
+export function EntryList({isEditing}: Props) {
   return (
     <>
     <div className="container" data-view="entries">
@@ -43,7 +48,7 @@ export function EntryList() {
     <div className="list-image-wrapper"><img className="entry-img" src={entry.imageURL} alt={entry.title}/></div>
     </div>
     <div className="column-half padding-lr">
-      <p className="bold row justify-between">{entry.title}<FaPencil className="edit"/></p>
+      <p className="bold row justify-between">{entry.title}<FaPencil onClick={isEditing} className="edit"/></p>
       <p>{entry.notes}</p>
       </div>
     </li>))}
