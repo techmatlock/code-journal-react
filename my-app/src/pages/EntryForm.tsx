@@ -1,28 +1,53 @@
 import { useEffect, useState } from "react";
-import { addEntry } from "../lib/data";
+import { addEntry, UnsavedEntry } from "../lib/data";
 
 export function EntryForm() {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<unknown>();
+  const [entry, setEntry] = useState<UnsavedEntry | null>(null);
 
-  function handleSubmit() {
-    useEffect(() => {
+  // function handleSubmit() {
+  //   useEffect(() => {
+  //   const addData = async () => {
+  //     const entry: UnsavedEntry = {
+  //       title: title,
+  //       photoUrl: image,
+  //       notes: notes,
+  //     }
+  //     try {
+  //       addEntry(entry);
+  //     } catch (error) {
+  //       setError(error);
+  //       }
+  //     };
+  //     addData();
+  //   }, []
+  // )}
+
+
+  function handleSubmit (event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const newEntry: UnsavedEntry = {
+      title: title,
+      photoUrl: image,
+      notes: notes
+    }
+    setEntry(newEntry);
+  }
+
+  useEffect(() => {
     const addData = async () => {
+      if (!entry) return;
       try {
-        addEntry();
+        await addEntry(entry);
       } catch (error) {
         setError(error);
         }
-      };
-      addData();
-    }, []
-  )}
-
-  function handleTitle() {
-    setTitle(title);
-  }
+    }
+    addData();
+  }, [entry])
 
 
   return (
@@ -54,7 +79,7 @@ export function EntryForm() {
                 id="formTitle"
                 name="formTitle"
                 value={title}
-                onChange={handleTitle}
+                onChange={(e) => setTitle(e.target.value)}
               />
               <label className="margin-bottom-1 d-block" htmlFor="photoUrk">
                 Photo URL
@@ -65,6 +90,8 @@ export function EntryForm() {
                 type="text"
                 id="formURL"
                 name="formURL"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
               />
             </div>
           </div>
@@ -80,6 +107,8 @@ export function EntryForm() {
                 id="formNotes"
                 cols={30}
                 rows={10}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               ></textarea>
             </div>
           </div>
