@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { addEntry, readEntry, UnsavedEntry } from "../lib/data";
+import { addEntry, readEntry, UnsavedEntry, updateEntry } from "../lib/data";
 import { useParams } from "react-router";
 
 type Props = {
@@ -13,30 +13,29 @@ export function EntryForm({isEditing}: Props) {
   const [error, setError] = useState<unknown>();
   const [entry, setEntry] = useState<UnsavedEntry | null>(null);
 
-
   const entryId = useParams();
-  console.log('entryid',entryId.entryId)
+
   useEffect(() => {
     const getEntry = async () => {
       try {
         const entry  = await readEntry(Number(entryId.entryId));
-        console.log('entry',entry)
+        if (!entry) return;
+        setTitle(entry.title);
+        setImage(entry.photoUrl);
+        setNotes(entry.notes);
       } catch (error){
-//
+        setError(error);
       }
       }
       getEntry();
     },[entryId])
-
-
-
 
   function handleSubmit (event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const newEntry: UnsavedEntry = {
       title: title,
       photoUrl: image,
-      notes: notes
+      notes: notes,
     }
     setEntry(newEntry);
   }
@@ -45,7 +44,11 @@ export function EntryForm({isEditing}: Props) {
     const addData = async () => {
       if (!entry) return;
       try {
-        await addEntry(entry);
+        if (isEditing) {
+          await addEntry(entry);
+        } else {
+          await updateEntry(entry);
+        }
       } catch (error) {
         setError(error);
         }

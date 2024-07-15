@@ -10,10 +10,11 @@ import { useState } from 'react'
 
 function App() {
   const [isEditing, setIsEditing] = useState(false);
+
   return (
     <Routes>
       <Route path='/' element={<Header />}>
-        <Route index element={<EntryList isEditing={() => setIsEditing(true)}/>}/>
+        <Route index element={<EntryList setIsEditing={setIsEditing}/>}/>
         <Route path='/entry-form/:entryId' element={<EntryForm isEditing={isEditing} />}/>
       </Route>
     </Routes>
