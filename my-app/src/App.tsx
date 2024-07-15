@@ -15,7 +15,7 @@ function App() {
     <Routes>
       <Route path='/' element={<Header />}>
         <Route index element={<EntryList setIsEditing={setIsEditing}/>}/>
-        <Route path='/entry-form/:entryId' element={<EntryForm isEditing={isEditing} />}/>
+        <Route path='/entry-form/:entryId' element={<EntryForm isEditing={isEditing} setIsEditing={setIsEditing} />}/>
       </Route>
     </Routes>
   )

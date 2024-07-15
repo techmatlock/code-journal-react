@@ -4,7 +4,7 @@ import '../css/reset.css'
 import '../css/styles.css'
 import { FaPencil } from "react-icons/fa6";
 import { useEffect, useState } from "react";
-import { readEntries } from "../lib/data";
+import { Entry, readEntries } from "../lib/data";
 type Props = {
   setIsEditing: (value: boolean) => void;
 }

@@ -1,19 +1,21 @@
 import { FormEvent, useEffect, useState } from "react";
-import { addEntry, readEntry, UnsavedEntry, updateEntry } from "../lib/data";
-import { useParams } from "react-router";
+import { addEntry, Entry, readEntry, UnsavedEntry, updateEntry } from "../lib/data";
+import { useNavigate, useParams } from "react-router";
 
 type Props = {
   isEditing: boolean;
+  setIsEditing: (value: boolean) => void;
 }
 
-export function EntryForm({isEditing}: Props) {
+export function EntryForm({isEditing, setIsEditing}: Props) {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<unknown>();
-  const [entry, setEntry] = useState<UnsavedEntry | null>(null);
+  const [entry, setEntry] = useState<UnsavedEntry| Entry | null>(null);
 
   const entryId = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getEntry = async () => {
@@ -37,24 +39,40 @@ export function EntryForm({isEditing}: Props) {
       photoUrl: image,
       notes: notes,
     }
-    setEntry(newEntry);
+    if(isEditing) {
+     const editedEntry: Entry = {
+      ...newEntry,
+      entryId: Number(entryId.entryId)
+     }
+     setEntry(editedEntry);
+     console.log('entry', entry);
+    } else {
+      setEntry(newEntry);
+    }
+    setIsEditing(false);
+    setTitle('');
+    setImage('');
+    setNotes('');
   }
 
   useEffect(() => {
     const addData = async () => {
       if (!entry) return;
       try {
-        if (isEditing) {
+        if (!isEditing) {
           await addEntry(entry);
         } else {
-          await updateEntry(entry);
+          await updateEntry(entry as Entry);
         }
       } catch (error) {
         setError(error);
         }
+      finally {
+        navigate('/');
+      }
     }
     addData();
-  }, [entry])
+  }, [entry, isEditing, navigate])
 
 
   return (
