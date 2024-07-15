@@ -1,3 +1,5 @@
 export function EntryForm() {
-  return <div></div>
+  return <>
+  <h1>I'm an entry form</h1>
+  </>
 }
